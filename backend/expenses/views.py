@@ -220,7 +220,7 @@ class MembershipView(APIView):
             user = User.objects.get(username=username)
         except User.DoesNotExist:
             user = User.objects.create(username=username, first_name=username)
-            user.set_password('flatmate123')
+            user.set_password('password123')
             user.save()
 
         joined_date = datetime.strptime(joined_date_str, '%Y-%m-%d').date()
