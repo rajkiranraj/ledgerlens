@@ -1,239 +1,257 @@
-# Key Engineering Decisions & Tradeoffs
+# LedgerLens AI — Key Engineering Decisions
 
-Every decision here was made with intentionality—balancing speed, quality, developer experience, and assignment requirements.
+This document records all significant technical decisions made during the development of LedgerLens AI, including the options considered, tradeoffs analyzed, and rationale behind the final choice.
 
 ---
 
-## 1. Database Choice: SQLite for Local Development
+## 1. Frontend Framework: React vs Next.js
 
-### The Problem
-
-Original setup required PostgreSQL, which meant every developer had to install a local database server, configure it, and troubleshoot connection issues—total overkill for an assignment submission.
+### Context
+We needed a modern frontend framework for building the expense intelligence platform UI.
 
 ### Options Considered
 
-| Option           | Pros                                  | Cons                                        |
-| ---------------- | ------------------------------------- | ------------------------------------------- |
-| Keep PostgreSQL  | Production-ready, feature-rich        | Slow onboarding, psycopg2 dependency issues |
-| Switch to SQLite | Zero configuration, built into Django | Not ideal for high-concurrency production   |
+| Option | Pros | Cons |
+|--------|------|------|
+| **React + Vite** | - Faster initial setup<br>- Simple, lightweight<br>- Great developer experience<br>- Hot module replacement works seamlessly | - No built-in SSR/SSG<br>- Need to set up routing manually |
+| **Next.js** | - Built-in routing<br>- SSR/SSG support<br>- Excellent SEO<br>- Production optimizations out of the box | - More complex<br>- Overkill for this project scope<br>- Slower initial load for development |
 
-### My Final Choice
+### Final Choice
+**React + Vite**
 
-SQLite for local development, with PostgreSQL still fully configurable in `settings.py` for production.
-
-### Why It's Smart
-
-Cut onboarding time from ~30 mins to <5 mins—huge win for recruiters trying to test the app quickly!
+### Rationale
+- The project doesn't require SEO (internal business tool)
+- Simpler stack means faster development and easier debugging
+- Vite provides excellent development experience with instant feedback
+- Avoided unnecessary complexity that doesn't add value for this use case
 
 ---
 
-## 2. Anomaly Detection Severity Levels
+## 2. Backend Framework: Django vs FastAPI
 
-### The Problem
-
-We needed to categorize anomalies to know which to auto-fix, which to flag, and which to reject outright.
+### Context
+We needed a robust backend framework with REST API support, authentication, and ORM.
 
 ### Options Considered
 
-| Option                                 | Pros                              | Cons                            |
-| -------------------------------------- | --------------------------------- | ------------------------------- |
-| 2 levels (Pass/Fail)                   | Simple                            | No granularity for user prompts |
-| 4 levels (Info/Warning/Error/Critical) | Full control, clear user guidance | Slightly more code              |
+| Option | Pros | Cons |
+|--------|------|------|
+| **Django REST Framework** | - Mature, battle-tested<br>- Built-in admin interface<br>- Excellent ORM<br>- Authentication out of the box<br>- Great for rapid development | - Heavier than FastAPI<br>- Slightly more boilerplate |
+| **FastAPI** | - Blazing fast<br>- Automatic OpenAPI docs<br>- Modern async support<br>- Lightweight | - No built-in admin<br>- More manual setup for auth<br>- Less mature ecosystem for full-featured apps |
 
-### My Final Choice
+### Final Choice
+**Django REST Framework**
 
-4 severity levels.
-
-### Why It's Smart
-
-Gives users clear feedback while keeping the code maintainable.
+### Rationale
+- Django Admin is invaluable for debugging and data auditing during development
+- Built-in authentication system saved significant development time
+- Mature ORM handles complex relationships and queries elegantly
+- The project doesn't need the extreme performance of FastAPI; Django is more than fast enough
 
 ---
 
-## 3. Frontend Routing: State-Based vs React Router
+## 3. Database: PostgreSQL vs SQLite
 
-### The Problem
-
-We needed "pages" for Dashboard, CSV Import, and Import Report—but adding React Router would increase complexity and dependencies.
+### Context
+We needed a relational database for structured expense data.
 
 ### Options Considered
 
-| Option              | Pros                                    | Cons                        |
-| ------------------- | --------------------------------------- | --------------------------- |
-| Add React Router    | URL-based navigation, industry standard | Extra dependency, more code |
-| State-Based "Pages" | Simple, lightweight                     | No URL sharing              |
+| Option | Pros | Cons |
+|--------|------|------|
+| **PostgreSQL** | - Production-ready<br>- Excellent concurrency<br>- Advanced features<br>- Great for scaling | - Requires separate installation<br>- More complex setup<br>- Resource-heavy for local dev |
+| **SQLite** | - Zero configuration<br>- Built into Python<br>- File-based, easy to backup<br>- Perfect for local development | - Not ideal for high concurrency<br>- No network access<br>- Limited advanced features |
 
-### My Final Choice
+### Final Choice
+**SQLite (local), PostgreSQL (production)**
 
-State-based routing.
-
-### Why It's Smart
-
-Keeps the app simple for an assignment—URL sharing isn't a requirement here, so no need for extra bloat.
+### Rationale
+- SQLite for local development: Zero setup means recruiters can run the project in <5 minutes
+- PostgreSQL in production: Takes advantage of Railway's managed PostgreSQL service
+- Django ORM abstracts away database differences, so switching is seamless
+- Best of both worlds: Easy development and production-ready scaling
 
 ---
 
-## 4. Anomaly Storage: In-Memory vs Database-Persistent
+## 4. AI Provider: NVIDIA NIM vs OpenAI
 
-### The Problem
-
-Should we store anomalies only during the import session, or save them forever?
+### Context
+We needed an LLM API for generating insights and import summaries.
 
 ### Options Considered
 
-| Option              | Pros                                  | Cons                               |
-| ------------------- | ------------------------------------- | ---------------------------------- |
-| In-Memory Only      | Faster, no extra DB tables            | No audit trail, no historical data |
-| Database-Persistent | Full audit trail, historical analysis | Extra DB writes                    |
+| Option | Pros | Cons |
+|--------|------|------|
+| **NVIDIA NIM** | - Powerful Llama models<br>- Competitive pricing<br>- Good for enterprise use cases | - Less familiar to many developers<br>- Smaller ecosystem |
+| **OpenAI** | - Extremely popular<br>- Excellent documentation<br>- Wide range of models<br>- Great developer experience | - Higher pricing at scale<br>- Overused in demos; less unique |
 
-### My Final Choice
+### Final Choice
+**NVIDIA NIM (with fallback)**
 
-Database-persistent.
-
-### Why It's Smart
-
-Allows users to go back and review past imports—super useful for debugging and accountability.
+### Rationale
+- NVIDIA NIM provides excellent performance for enterprise analytics use cases
+- Standout choice compared to the overused OpenAI in coding assignments
+- Implemented a robust deterministic fallback, so the app works perfectly even without an API key
+- Demonstrates ability to work with multiple LLM providers
 
 ---
 
-## 5. UI Animations: To Add or Not To Add?
+## 5. Hosting: Cloudflare vs Vercel
 
-### The Problem
-
-The assignment explicitly said to keep it professional and avoid unnecessary animations.
+### Context
+We needed a hosting platform for the frontend static assets.
 
 ### Options Considered
 
-| Option                | Pros                                   | Cons                            |
-| --------------------- | -------------------------------------- | ------------------------------- |
-| Add Microinteractions | Fancier UI                             | Against assignment instructions |
-| Clean & Professional  | Matches assignment, recruiter-friendly | Less "flashy"                   |
+| Option | Pros | Cons |
+|--------|------|------|
+| **Cloudflare Pages** | - Lightning-fast CDN<br>- Generous free tier<br>- Excellent global performance<br>- Easy to deploy | - Less feature-rich than Vercel for Next.js apps |
+| **Vercel** | - Perfect for Next.js<br>- Great deployment experience<br>- Many convenience features | - More expensive at scale<br>- Overkill for React-only apps |
 
-### My Final Choice
+### Final Choice
+**Cloudflare Pages**
 
-No unnecessary animations—clean, professional UI only.
-
-### Why It's Smart
-
-Followed instructions perfectly, and recruiters care more about functionality and code quality than flashy animations anyway.
+### Rationale
+- Cloudflare's edge network provides exceptional performance worldwide
+- Generous free tier is perfect for this project
+- Deployment process is straightforward and reliable
+- Since we're using React (not Next.js), Vercel's Next-specific features aren't needed
 
 ---
 
-## 6. Django Version Upgrade
+## 6. Fallback Strategy: Rule-based Fallback vs AI-only System
 
-### The Problem
-
-Original Django 3.2 was incompatible with Python 3.14, causing errors.
+### Context
+What happens if the AI API is unavailable or no API key is provided?
 
 ### Options Considered
 
-| Option           | Pros                     | Cons                        |
-| ---------------- | ------------------------ | --------------------------- |
-| Downgrade Python | No code changes          | Stuck on old Python version |
-| Upgrade Django   | Future-proof, compatible | Minor dependency updates    |
+| Option | Pros | Cons |
+|--------|------|------|
+| **AI-only System** | - Simpler architecture<br>- All features use AI | - App breaks if API fails<br>- Requires API key for basic functionality<br>- Risky for demos |
+| **Rule-based Fallback** | - App works 100% without AI<br>- Graceful degradation<br>- Demo-friendly | - More code to write<br>- Need to maintain two systems |
 
-### My Final Choice
+### Final Choice
+**Rule-based Fallback**
 
-Upgrade to Django 4.2.16 (LTS).
-
-### Why It's Smart
-
-Future-proofs the app and keeps dependencies modern.
+### Rationale
+- Critical for coding assignments: The app must work perfectly when the recruiter runs it
+- Deterministic logic provides consistent, predictable results
+- AI enhances the app but isn't required for core functionality
+- Demonstrates engineering judgment in prioritizing reliability over "flashy" features
 
 ---
 
-## 7. Import Report Format
+## 7. Import Processing: Server-side vs Client-side
 
-### The Problem
-
-What format should downloadable import reports be?
+### Context
+Should CSV parsing and anomaly detection happen on the server or client?
 
 ### Options Considered
 
-| Option | Pros                            | Cons                                   |
-| ------ | ------------------------------- | -------------------------------------- |
-| CSV    | Easy to open in Excel           | Limited nested data                    |
-| JSON   | Comprehensive, machine-readable | Less human-friendly without formatting |
-| PDF    | Professional-looking            | Hard to generate, extra dependency     |
+| Option | Pros | Cons |
+|--------|------|------|
+| **Client-side Only** | - Faster initial feedback<br>- Less server load | - No audit trail<br>- Security concerns<br>- Can't handle large files<br>- Duplicate detection is limited |
+| **Server-side Processing** | - Full audit trail in database<br>- Better security<br>- Can handle large files<br>- Duplicate detection across imports | - Slightly more latency<br>- More server resources |
 
-### My Final Choice
+### Final Choice
+**Server-side Import Processing**
 
-JSON (with pretty formatting for download).
-
-### Why It's Smart
-
-Balances comprehensiveness with ease of implementation—no extra dependencies needed!
+### Rationale
+- Audit trail is critical for an expense intelligence platform
+- Server-side processing allows for cross-import duplicate detection
+- Database persistence ensures no data loss
+- Better security: No need to send sensitive expense data back and forth unnecessarily
 
 ---
 
-## 8. AI Features: Optional & Server-Side Only
+## 8. Data Preservation: Keep All Data vs Purge Old Data
 
-### The Problem
-
-How should AI features be integrated to keep the app reliable and secure?
+### Context
+What data retention policy should we implement?
 
 ### Options Considered
 
-| Option                        | Pros                         | Cons                                  |
-| ----------------------------- | ---------------------------- | ------------------------------------- |
-| AI required for core features | More "flashy"                | Breaks app if API fails               |
-| AI optional, server-side only | Secure, graceful degradation | More backend work                     |
-| AI client-side only           | Simple                       | Exposes API keys, no server fallbacks |
+| Option | Pros | Cons |
+|--------|------|------|
+| **Keep All Data** | - Full historical record<br>- Audit trail forever<br>- Great for analytics | - Database grows indefinitely<br>- Privacy concerns |
+| **Purge Old Data** | - Smaller database<br>- Better performance<br>- Complies with data minimization | - Lost historical insights<br>- No audit trail for old data |
 
-### My Final Choice
+### Final Choice
+**Keep All Data (with proper access controls)**
 
-AI features are completely optional, server-side only, with deterministic fallbacks if AI fails or no API key is provided.
-
-### Why It's Smart
-
-- Security: API keys are never exposed to clients
-- Reliability: App works perfectly without AI (graceful fallbacks)
-- Cost: Uses free tier of NVIDIA NIM
-- Flexibility: Easy to swap models later
+### Rationale
+- Historical data is invaluable for expense analytics and trend detection
+- Full audit trail is a key feature of the platform
+- For the scope of this assignment, storage concerns are negligible
+- Demonstrates understanding of data importance for business intelligence
 
 ---
 
-## 9. AI Caching Strategy
+## 9. Anomaly Storage: Database vs In-memory
 
-### The Problem
-
-How to avoid redundant expensive AI calls while keeping insights fresh?
+### Context
+Should detected anomalies be stored in the database or only kept in memory during import?
 
 ### Options Considered
 
-| Option                   | Pros                 | Cons                                   |
-| ------------------------ | -------------------- | -------------------------------------- |
-| No caching               | Always fresh         | Slow, expensive                        |
-| In-memory cache with TTL | Simple, fast         | No persistence, lost on server restart |
-| Redis cache              | Persistent, scalable | Extra infrastructure                   |
+| Option | Pros | Cons |
+|--------|------|------|
+| **In-memory Only** | - Faster<br>- Less database load | - No historical record<br>- Can't review past anomalies<br>- No audit trail |
+| **Database-persisted** | - Full audit trail<br>- Can review past imports<br>- Historical anomaly analytics<br>- Better debugging | - More database writes<br>- Slightly slower imports |
 
-### My Final Choice
+### Final Choice
+**Database-persisted Anomalies**
 
-In-memory cache with 1-hour TTL (time-to-live). Cache is cleared automatically when new data is imported or expenses are added/deleted.
-
-### Why It's Smart
-
-Perfect for this assignment scale—simple, fast, no extra dependencies. For production, could easily swap in Redis.
+### Rationale
+- Audit trail is a requirement for enterprise expense systems
+- Historical anomaly data enables trend analysis (e.g., "are duplicate rates increasing?")
+- Makes debugging import issues much easier
+- The performance tradeoff is negligible for the project scope
 
 ---
 
-## 10. AI Prompt Engineering Rules
+## 10. UI Design: Professional SaaS vs Fun/Playful
 
-### The Problem
+### Context
+What visual style should the application have?
 
-How to prevent hallucinations and ensure AI outputs are always valid JSON?
+### Options Considered
 
-### My Final Choice
+| Option | Pros | Cons |
+|--------|------|------|
+| **Fun/Playful Design** | - More "visually interesting"<br>- Can show off animation skills | - Not appropriate for business/expense tool<br>- Distracts from core functionality |
+| **Professional SaaS Design** | - Appropriate for business use case<br>- Clean and focused<br>- Recruiter-friendly | - Less "flashy"<br>- Fewer opportunities to show off animations |
 
-Strict system prompt with hard rules:
+### Final Choice
+**Professional SaaS Design**
 
-1. Never invent statistics or values
-2. Only use data provided
-3. Keep outputs concise
-4. Return valid JSON only
-5. No markdown or extra explanations
-6. Validate JSON parsing on server side
+### Rationale
+- The project is positioned as an enterprise expense intelligence platform
+- Professional design demonstrates understanding of target audience
+- Clean UI keeps focus on functionality, which is what matters most for a coding assignment
+- Avoided unnecessary animations that don't add value
 
-### Why It's Smart
+---
 
-Minimizes hallucinations, ensures consistent responses that the frontend can parse reliably.
+## Decision Log Template (for future decisions)
+
+```markdown
+## [Decision Number]. [Short Title]
+
+### Context
+[What problem are we solving? What's the background?]
+
+### Options Considered
+
+| Option | Pros | Cons |
+|--------|------|------|
+| [Option 1] | [List pros] | [List cons] |
+| [Option 2] | [List pros] | [List cons] |
+
+### Final Choice
+[Choice made]
+
+### Rationale
+[Why this choice? What tradeoffs were prioritized?]
+```
