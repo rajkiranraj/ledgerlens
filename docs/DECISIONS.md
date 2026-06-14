@@ -1,4 +1,4 @@
-# LedgerLens: Key Engineering Decisions & Tradeoffs
+# Key Engineering Decisions & Tradeoffs
 
 Every decision here was made with intentionality—balancing speed, quality, developer experience, and assignment requirements.
 
@@ -186,10 +186,10 @@ AI features are completely optional, server-side only, with deterministic fallba
 
 ### Why It's Smart
 
-- **Security**: API keys are never exposed to clients
-- **Reliability**: App works perfectly without AI (graceful fallbacks)
-- **Cost**: Uses free tier of Gemini Flash
-- **Flexibility**: Easy to swap models later
+- Security: API keys are never exposed to clients
+- Reliability: App works perfectly without AI (graceful fallbacks)
+- Cost: Uses free tier of NVIDIA NIM
+- Flexibility: Easy to swap models later
 
 ---
 

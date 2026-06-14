@@ -1,136 +1,122 @@
-# LedgerLens: Flatmates Expense Sharing App (Production-Ready Assignment)
+# LedgerLens: Flatmates Expense Sharing App
 
-A modern, fully-featured expense sharing app built to demonstrate enterprise-grade development practices—including robust CSV import, AI-augmented (but human-driven) anomaly detection, polished UI/UX, and optional AI-powered insights. I built this as a student intern assignment, using AI as a productivity tool while owning every decision and validation step.
+A modern, fully-featured expense sharing application built with Django and React.
 
-## ✨ Key Highlights of My Work
+## Badges
 
-- **Went above and beyond requirements**: Added import history, downloadable reports, and AI-powered insights
-- **Prioritized developer experience**: Switched to SQLite for zero-config local setup
-- **Built with engineering discipline**: Full linting, production build tested, database normalization
-- **Honest and transparent**: Documented every decision, AI usage, and tradeoffs clearly
+[![CI](https://github.com/rajkiranraj/ledgerlens/actions/workflows/ci.yml/badge.svg)](https://github.com/rajkiranraj/ledgerlens/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
+[![React](https://img.shields.io/badge/react-19-blue.svg)](https://react.dev/)
 
----
+## Key Features
 
-## 🤖 AI Features (Optional)
+- Core expense sharing functionality with balance calculation and debt minimization
+- Comprehensive CSV import with advanced anomaly detection
+- Import report generation and download
+- AI-powered insights and summaries using NVIDIA NIM (optional)
+- Dashboard with analytics and transaction history
+- Glassmorphism UI with polished design
+- Zero-config SQLite local setup (PostgreSQL configurable for production)
 
-The app includes optional AI-powered features using NVIDIA NIM (Google Gemma model). These are completely optional—if no API key is provided, the app falls back to deterministic rule-based summaries.
-
-### Setup AI (Optional)
-
-1. Get a free NVIDIA NIM API key
-2. In the `backend/` directory, create a file named `.env` (copy from `.env.example`):
-   ```
-   NVIDIA_NIM_API_KEY=your_actual_api_key_here
-   ```
-3. Restart the backend server if it's already running
-4. The AI features will now be enabled!
-
-### AI Features
-
-- **AI Expense Insights**: Generates key observations, spending trends, and anomaly summaries from your expense data
-- **AI Import Summary**: Provides a concise, business-friendly summary of each CSV import
-
----
-
-## 🏗️ Architecture
-
-### Backend
-
-- **Framework**: Django 4.2.16 with Django REST Framework
-- **Database**: SQLite (local dev, PostgreSQL-configurable for production)
-- **Key Models**:
-  - Core: `Group`, `Expense`, `Settlement`, `Member`
-  - Import Tracking: `Import`, `Anomaly`, `Category`, `ImportReport` (all added by me!)
-
-### Frontend
-
-- **Framework**: React 19 + Vite
-- **Styling**: Glassmorphism UI (matches existing design system perfectly)
-- **Components**:
-  - `App`: Auth & state management
-  - `Dashboard`: Analytics + transaction + import history
-  - `CSVImportWizard`: Multi-step anomaly resolution
-  - `ImportReport`: Detailed import results (downloadable JSON)
-
----
-
-## 🚀 Setup & Installation (5 Mins Max!)
+## Getting Started
 
 ### Prerequisites
 
-- Python 3.10+
-- Node.js 18+
+- Python 3.10 or higher
+- Node.js 18 or higher
 
-### Backend
+### Installation
 
-```bash
-cd backend
-python -m venv venv2
-source venv2/bin/activate  # Windows: venv2\Scripts\activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py shell < seed_data.py
-python manage.py runserver
-```
+1. Clone the repository:
 
-### Frontend
+   ```bash
+   git clone https://github.com/rajkiranraj/ledgerlens.git
+   cd ledgerlens
+   ```
 
-```bash
-cd frontend/my-app
-npm install
-npm run dev
-```
+2. Backend Setup:
 
----
+   ```bash
+   cd backend
+   python -m venv venv2
+   source venv2/bin/activate  # On Windows: venv2\Scripts\activate
+   pip install -r requirements.txt
+   python manage.py migrate
+   python manage.py shell < seed_data.py
+   python manage.py runserver
+   ```
 
-## 📱 Running Locally
+3. Frontend Setup:
 
-1. Backend runs on http://localhost:8000
-2. Frontend runs on http://localhost:5174
-3. Login with:
-   - Username: `rohan`
-   - Password: `flatmate123`
-     (or `krish`, `aryan`, `neha`—all seeded!)
+   ```bash
+   cd frontend/my-app
+   npm install
+   npm run dev
+   ```
 
----
+4. Access the app at http://localhost:5174 and log in with:
+   - Username: rohan
+   - Password: flatmate123
 
-## ✨ Features (All Requirements Met + Extras!)
+### Optional AI Setup
 
-### CSV Import & Anomaly Detection
+1. Get an NVIDIA NIM API key
+2. Create a `.env` file in the backend directory:
+   ```
+   NVIDIA_NIM_API_KEY=your_api_key_here
+   ```
+3. Restart the backend server
 
-- 12+ anomaly types detected (missing fields, duplicates, invalid dates, etc.)
-- 4 severity levels (info → critical)
-- User-in-the-loop anomaly resolution
-- Full audit trail of every import
+### Troubleshooting
 
-### Dashboard & Analytics
+- If the backend won't start, ensure you have the correct Python version and virtual environment activated
+- If the frontend won't start, check that Node.js is installed and dependencies are installed with `npm install`
+- For database issues, try running `python manage.py migrate` again
+- If you encounter port conflicts, change the backend port with `python manage.py runserver 8001`
 
-- Overview cards with key metrics
-- Import history with downloadable reports
-- Expense and settlement ledgers
-- Glassmorphism UI that looks great
+## AI Features (Optional)
 
-### Extras I Added
+The app includes optional AI-powered features using NVIDIA NIM. These are completely optional—if no API key is provided, the app falls back to deterministic rule-based summaries.
 
-- Full Django admin integration for debugging
-- Analytics endpoint with spending breakdowns
-- Import history table in dashboard
-- Zero-config local setup
+- AI Expense Insights: Generates key observations, spending trends, and anomaly summaries
+- AI Import Summary: Provides a concise, business-friendly summary of each CSV import
 
----
+## Documentation
 
-## 📦 Deployment
+- [API Documentation](docs/API.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
+- [Key Decisions](docs/DECISIONS.md)
+- [Contributing Guide](CONTRIBUTING.md)
+- [Change Log](CHANGELOG.md)
+- [TODO List](TODO.md)
+- [AI Usage](AI_USAGE.md)
+- [Scope](SCOPE.md)
 
-- Frontend: `npm run build` → deploy `dist/` folder
-- Backend: Deploy to any Django host, apply migrations first
-- Database: Swap SQLite for PostgreSQL in `settings.py` for production
+## Roadmap
 
----
+- [ ] Add visual charts to dashboard (spending by category, monthly trends)
+- [ ] Implement user profile management
+- [ ] Add email notifications for settlements
+- [ ] Support for multiple currencies with automatic conversion
+- [ ] Add export functionality to PDF and Excel
+- [ ] Implement data backup and restore
+- [ ] Add mobile-responsive optimizations
+- [ ] Write comprehensive unit and integration tests
+- [ ] Add real-time collaboration features
 
-## 📚 Documentation (All Included!)
+## Contributing
 
-Check out these files to see my thinking process:
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
-- **SCOPE.md**: Requirements breakdown, anomaly strategy, database docs
-- **DECISIONS.md**: Every tradeoff I considered and final choices
-- **AI_USAGE.md**: Honest account of how I used AI (and where I added 10x value!)
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Django REST Framework for the backend API
+- React and Vite for the frontend
+- NVIDIA NIM for AI features
+- The open-source community for various dependencies and inspiration
