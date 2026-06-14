@@ -1,5 +1,10 @@
 # LedgerLens AI — AI-Powered Expense Intelligence Platform
 
+## 🎯 Demo Credentials
+
+- **Username**: demo / admin / user
+- **Password**: password123
+
 A professional expense intelligence platform for data ingestion, anomaly detection, and AI-powered insights. Built with Django (backend) and React + Vite (frontend).
 
 ## Badges

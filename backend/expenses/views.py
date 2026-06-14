@@ -47,7 +47,7 @@ def save_expense_splits(expense, split_with_usernames, split_details_str=None):
             users_in_split.append(u)
         except User.DoesNotExist:
             u = User.objects.create(username=cleaned_uname, first_name=cleaned_uname)
-            u.set_password('flatmate123')
+            u.set_password('password123')
             u.save()
             users_in_split.append(u)
 

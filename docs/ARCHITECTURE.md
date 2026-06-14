@@ -7,7 +7,7 @@ LedgerLens is a modern, full-stack expense sharing application built with Django
 The backend is a Django REST Framework API with the following structure:
 
 ### Core Models
-1. Group - Manages flatmate groups
+1. Group - Manages groups for expense tracking
 2. User - Standard Django user model
 3. Member - Group member information
 4. Expense - Shared expense data

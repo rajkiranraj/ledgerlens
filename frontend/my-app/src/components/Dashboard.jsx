@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from 'react';
 import {
   PlusCircle,
   Wallet,
@@ -9,8 +9,8 @@ import {
   FileSpreadsheet,
   FileText,
   X,
-} from "lucide-react";
-import { API_BASE_URL } from "../config";
+} from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 export default function Dashboard({
   groupId,
@@ -50,37 +50,37 @@ export default function Dashboard({
       const rect = ref.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      ref.style.setProperty("--mouse-x", `${x}px`);
-      ref.style.setProperty("--mouse-y", `${y}px`);
+      ref.style.setProperty('--mouse-x', `${x}px`);
+      ref.style.setProperty('--mouse-y', `${y}px`);
     }
   };
 
   // Form states
   const [newExpense, setNewExpense] = useState({
-    description: "",
-    amount: "",
-    currency: "INR",
-    exchange_rate: "1",
+    description: '',
+    amount: '',
+    currency: 'INR',
+    exchange_rate: '1',
     paid_by: user.id,
-    split_type: "equal",
+    split_type: 'equal',
     split_with: [],
-    split_details: "",
-    date: new Date().toISOString().split("T")[0],
-    notes: "",
+    split_details: '',
+    date: new Date().toISOString().split('T')[0],
+    notes: '',
   });
 
   const [newSettlement, setNewSettlement] = useState({
     payer: user.id,
-    payee: "",
-    amount: "",
-    date: new Date().toISOString().split("T")[0],
-    notes: "",
+    payee: '',
+    amount: '',
+    date: new Date().toISOString().split('T')[0],
+    notes: '',
   });
 
   const [memberForm, setMemberForm] = useState({
-    username: "",
-    joined_date: new Date().toISOString().split("T")[0],
-    left_date: "",
+    username: '',
+    joined_date: new Date().toISOString().split('T')[0],
+    left_date: '',
   });
 
   const [error, setError] = useState(null);
@@ -94,42 +94,42 @@ export default function Dashboard({
       // Get Balances, Ledgers, Minimized
       const balRes = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/balances/`,
-        { headers },
+        { headers }
       );
       const balData = await balRes.json();
 
       // Get Expenses
       const expRes = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/expenses/`,
-        { headers },
+        { headers }
       );
       const expData = await expRes.json();
 
       // Get Settlements
       const setlRes = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/settlements/`,
-        { headers },
+        { headers }
       );
       const setlData = await setlRes.json();
 
       // Get Members
       const memRes = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/members/`,
-        { headers },
+        { headers }
       );
       const memData = await memRes.json();
 
       // Get Analytics
       const analyticsRes = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/analytics/`,
-        { headers },
+        { headers }
       );
       const analyticsData = await analyticsRes.json();
 
       // Get Imports
       const importsRes = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/imports/`,
-        { headers },
+        { headers }
       );
       const importsData = await importsRes.json();
 
@@ -146,7 +146,7 @@ export default function Dashboard({
         split_with: memData.map((m) => m.username),
       }));
     } catch {
-      setError("Failed to sync dashboard data with server");
+      setError('Failed to sync dashboard data with server');
     }
   };
 
@@ -157,12 +157,12 @@ export default function Dashboard({
       const res = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/ai/insights/`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
             Authorization: `Token ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
-        },
+        }
       );
       if (res.ok) {
         const data = await res.json();
@@ -170,7 +170,7 @@ export default function Dashboard({
         setAiInsightsLastFetched(new Date().toLocaleString());
       }
     } catch (err) {
-      console.error("Failed to fetch AI insights:", err);
+      console.error('Failed to fetch AI insights:', err);
     } finally {
       setAiInsightsLoading(false);
     }
@@ -188,7 +188,7 @@ export default function Dashboard({
 
     // Basic splits validation
     if (newExpense.split_with.length === 0) {
-      setError("Please select at least one member to split the expense with.");
+      setError('Please select at least one member to split the expense with.');
       return;
     }
 
@@ -196,33 +196,33 @@ export default function Dashboard({
       const response = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/expenses/`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
             Authorization: `Token ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(newExpense),
-        },
+        }
       );
 
       if (!response.ok) {
         const errData = await response.json();
-        throw new Error(errData.error || "Failed to add expense");
+        throw new Error(errData.error || 'Failed to add expense');
       }
 
       setShowExpenseModal(false);
       // Reset form
       setNewExpense({
-        description: "",
-        amount: "",
-        currency: "INR",
-        exchange_rate: "1",
+        description: '',
+        amount: '',
+        currency: 'INR',
+        exchange_rate: '1',
         paid_by: user.id,
-        split_type: "equal",
+        split_type: 'equal',
         split_with: members.map((m) => m.username),
-        split_details: "",
-        date: new Date().toISOString().split("T")[0],
-        notes: "",
+        split_details: '',
+        date: new Date().toISOString().split('T')[0],
+        notes: '',
       });
       fetchData();
     } catch (err) {
@@ -236,7 +236,7 @@ export default function Dashboard({
     setError(null);
 
     if (!newSettlement.payee) {
-      setError("Please select a payee to settle with.");
+      setError('Please select a payee to settle with.');
       return;
     }
 
@@ -244,26 +244,26 @@ export default function Dashboard({
       const response = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/settlements/`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
             Authorization: `Token ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(newSettlement),
-        },
+        }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to record settlement");
+        throw new Error('Failed to record settlement');
       }
 
       setShowSettlementModal(false);
       setNewSettlement({
         payer: user.id,
-        payee: "",
-        amount: "",
-        date: new Date().toISOString().split("T")[0],
-        notes: "",
+        payee: '',
+        amount: '',
+        date: new Date().toISOString().split('T')[0],
+        notes: '',
       });
       fetchData();
     } catch (err) {
@@ -273,29 +273,29 @@ export default function Dashboard({
 
   // Delete Expense
   const handleDeleteExpense = async (id) => {
-    if (!confirm("Are you sure you want to delete this expense?")) return;
+    if (!confirm('Are you sure you want to delete this expense?')) return;
     try {
       await fetch(`${API_BASE_URL}/api/groups/${groupId}/expenses/${id}/`, {
-        method: "DELETE",
+        method: 'DELETE',
         headers: { Authorization: `Token ${token}` },
       });
       fetchData();
     } catch {
-      setError("Failed to delete expense");
+      setError('Failed to delete expense');
     }
   };
 
   // Delete Settlement
   const handleDeleteSettlement = async (id) => {
-    if (!confirm("Are you sure you want to delete this settlement?")) return;
+    if (!confirm('Are you sure you want to delete this settlement?')) return;
     try {
       await fetch(`${API_BASE_URL}/api/groups/${groupId}/settlements/${id}/`, {
-        method: "DELETE",
+        method: 'DELETE',
         headers: { Authorization: `Token ${token}` },
       });
       fetchData();
     } catch {
-      setError("Failed to delete settlement");
+      setError('Failed to delete settlement');
     }
   };
 
@@ -306,23 +306,23 @@ export default function Dashboard({
       const response = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/members/`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
             Authorization: `Token ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(memberForm),
-        },
+        }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to save group member");
+        throw new Error('Failed to save group member');
       }
 
       setMemberForm({
-        username: "",
-        joined_date: new Date().toISOString().split("T")[0],
-        left_date: "",
+        username: '',
+        joined_date: new Date().toISOString().split('T')[0],
+        left_date: '',
       });
       fetchData();
     } catch (err) {
@@ -345,9 +345,9 @@ export default function Dashboard({
     return (
       <div
         className="glass-panel"
-        style={{ textAlign: "center", padding: "100px 40px" }}
+        style={{ textAlign: 'center', padding: '100px 40px' }}
       >
-        <h2 style={{ justifyContent: "center" }}>Syncing Ledger...</h2>
+        <h2 style={{ justifyContent: 'center' }}>Syncing Ledger...</h2>
         <p>Loading PostgreSQL calculations and minimizations.</p>
       </div>
     );
@@ -356,7 +356,7 @@ export default function Dashboard({
   const { balances, ledgers, minimized_debts } = data;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Header Panel */}
       <div
         ref={headerRef}
@@ -366,23 +366,22 @@ export default function Dashboard({
         <div>
           <h1
             style={{
-              fontSize: "1.8rem",
+              fontSize: '1.8rem',
               margin: 0,
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
             }}
           >
-            <Wallet style={{ color: "var(--text-primary)" }} /> Flat 404 Shared
-            Ledger
+            <Wallet style={{ color: 'var(--text-primary)' }} /> LedgerLens AI
           </h1>
-          <p style={{ margin: "4px 0 0", fontSize: "0.9rem" }}>
+          <p style={{ margin: '4px 0 0', fontSize: '0.9rem' }}>
             Relational calculations backed by PostgreSQL database audit reports.
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-          <span style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
             Log in: <strong>{user.username}</strong>
           </span>
           <button
@@ -396,7 +395,7 @@ export default function Dashboard({
           </button>
           <button
             className="btn btn-secondary"
-            style={{ padding: "8px 12px" }}
+            style={{ padding: '8px 12px' }}
             onClick={onLogout}
           >
             <LogOut size={16} />
@@ -408,13 +407,13 @@ export default function Dashboard({
         <div
           className="glass-panel"
           style={{
-            color: "var(--danger)",
-            background: "var(--danger-bg)",
-            border: "1px solid var(--danger-border)",
-            padding: "12px 16px",
-            display: "flex",
-            gap: "10px",
-            alignItems: "center",
+            color: 'var(--danger)',
+            background: 'var(--danger-bg)',
+            border: '1px solid var(--danger-border)',
+            padding: '12px 16px',
+            display: 'flex',
+            gap: '10px',
+            alignItems: 'center',
           }}
         >
           <LogOut size={20} />
@@ -425,7 +424,7 @@ export default function Dashboard({
       {/* Balances Dashboard Grid */}
       <div className="dashboard-grid">
         {/* Left column: Balances & Minimized Transactions */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Flatmate Net Balances */}
           <div
             ref={balancesRef}
@@ -437,13 +436,12 @@ export default function Dashboard({
             </h2>
             <p
               style={{
-                marginTop: "-8px",
-                marginBottom: "20px",
-                fontSize: "0.85rem",
+                marginTop: '-8px',
+                marginBottom: '20px',
+                fontSize: '0.85rem',
               }}
             >
-              Click on a flatmate to view their detailed itemized ledger
-              (Rohan's no-magic-numbers view).
+              Click on a group member to view their detailed itemized ledger.
             </p>
 
             <div className="balances-row">
@@ -453,16 +451,16 @@ export default function Dashboard({
                 return (
                   <div
                     key={m.id}
-                    className={`balance-card ${isPos ? "positive" : "negative"}`}
+                    className={`balance-card ${isPos ? 'positive' : 'negative'}`}
                     onClick={() => setSelectedLedgerMember(m.username)}
                   >
                     <div>
                       <span className="name">{m.display_name}</span>
                       <span
                         style={{
-                          display: "block",
-                          fontSize: "0.75rem",
-                          color: "var(--text-secondary)",
+                          display: 'block',
+                          fontSize: '0.75rem',
+                          color: 'var(--text-secondary)',
                         }}
                       >
                         {m.left_date
@@ -492,9 +490,9 @@ export default function Dashboard({
             </h2>
             <p
               style={{
-                marginTop: "-8px",
-                marginBottom: "20px",
-                fontSize: "0.85rem",
+                marginTop: '-8px',
+                marginBottom: '20px',
+                fontSize: '0.85rem',
               }}
             >
               Aisha's request: Minimizes overall transaction count. Settles all
@@ -504,38 +502,38 @@ export default function Dashboard({
             {minimized_debts.length === 0 ? (
               <div
                 style={{
-                  padding: "30px",
-                  background: "rgba(0,0,0,0.02)",
-                  border: "1px dashed var(--panel-border-secondary)",
-                  borderRadius: "8px",
-                  textAlign: "center",
+                  padding: '30px',
+                  background: 'rgba(0,0,0,0.02)',
+                  border: '1px dashed var(--panel-border-secondary)',
+                  borderRadius: '8px',
+                  textAlign: 'center',
                 }}
               >
                 <Users
                   size={32}
-                  style={{ color: "var(--success)", marginBottom: "8px" }}
+                  style={{ color: 'var(--success)', marginBottom: '8px' }}
                 />
-                <h4>All Clean! No outstanding debts in Flat 404.</h4>
+                <h4>All Clean! No outstanding debts.</h4>
               </div>
             ) : (
               <div className="settlement-schedule">
                 {minimized_debts.map((tx, txIdx) => (
                   <div key={txIdx} className="settlement-item">
                     <div className="party">
-                      <span className="name" style={{ color: "var(--danger)" }}>
+                      <span className="name" style={{ color: 'var(--danger)' }}>
                         {tx.from_user}
                       </span>
                       <span
                         style={{
-                          color: "var(--text-secondary)",
-                          fontSize: "0.85rem",
+                          color: 'var(--text-secondary)',
+                          fontSize: '0.85rem',
                         }}
                       >
                         owes and pays
                       </span>
                       <span
                         className="name"
-                        style={{ color: "var(--success)" }}
+                        style={{ color: 'var(--success)' }}
                       >
                         {tx.to_user}
                       </span>
@@ -551,12 +549,12 @@ export default function Dashboard({
         </div>
 
         {/* Right column: Quick action buttons & historical logs */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Quick Actions */}
           <div
             ref={quickActionsRef}
             className="glass-panel spotlight-card"
-            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+            style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
             onMouseMove={(e) => handleSpotlight(e, quickActionsRef.current)}
           >
             <h2>Actions</h2>
@@ -578,47 +576,47 @@ export default function Dashboard({
           <div
             ref={statsRef}
             className="glass-panel spotlight-card"
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
             onMouseMove={(e) => handleSpotlight(e, statsRef.current)}
           >
             <h2>Ledger & Import Stats</h2>
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                borderBottom: "1px solid var(--panel-border-secondary)",
-                paddingBottom: "8px",
+                display: 'flex',
+                justifyContent: 'space-between',
+                borderBottom: '1px solid var(--panel-border-secondary)',
+                paddingBottom: '8px',
               }}
             >
-              <span style={{ color: "var(--text-secondary)" }}>
+              <span style={{ color: 'var(--text-secondary)' }}>
                 Total Expenses
               </span>
               <strong>
                 {analytics?.total_expenses
-                  ? `₹${parseFloat(analytics.total_expenses).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`
+                  ? `₹${parseFloat(analytics.total_expenses).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`
                   : 0}
               </strong>
             </div>
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                borderBottom: "1px solid var(--panel-border-secondary)",
-                paddingBottom: "8px",
+                display: 'flex',
+                justifyContent: 'space-between',
+                borderBottom: '1px solid var(--panel-border-secondary)',
+                paddingBottom: '8px',
               }}
             >
-              <span style={{ color: "var(--text-secondary)" }}>
+              <span style={{ color: 'var(--text-secondary)' }}>
                 Total Imports
               </span>
-              <strong style={{ color: "var(--accent)" }}>
+              <strong style={{ color: 'var(--accent)' }}>
                 {analytics?.total_imports || 0}
               </strong>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ color: "var(--text-secondary)" }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-secondary)' }}>
                 Anomalies Found
               </span>
-              <strong style={{ color: "var(--warning)" }}>
+              <strong style={{ color: 'var(--warning)' }}>
                 {analytics?.anomalies_found || 0}
               </strong>
             </div>
@@ -628,32 +626,32 @@ export default function Dashboard({
           <div
             className="glass-panel spotlight-card"
             style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
               background:
-                "linear-gradient(135deg, rgba(139,92,246,0.08) 0%, rgba(59,130,246,0.05) 100%)",
-              border: "1px solid rgba(139,92,246,0.2)",
+                'linear-gradient(135deg, rgba(139,92,246,0.08) 0%, rgba(59,130,246,0.05) 100%)',
+              border: '1px solid rgba(139,92,246,0.2)',
             }}
           >
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}
             >
               <h2
                 style={{
                   margin: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
                 }}
               >
                 <span
                   style={{
-                    fontSize: "1.2rem",
+                    fontSize: '1.2rem',
                   }}
                 >
                   ⚡
@@ -662,25 +660,25 @@ export default function Dashboard({
               </h2>
               <button
                 className="btn btn-secondary"
-                style={{ padding: "6px 12px", fontSize: "0.85rem" }}
+                style={{ padding: '6px 12px', fontSize: '0.85rem' }}
                 onClick={() => fetchAiInsights(true)}
                 disabled={aiInsightsLoading}
               >
-                {aiInsightsLoading ? "Generating..." : "Refresh"}
+                {aiInsightsLoading ? 'Generating...' : 'Refresh'}
               </button>
             </div>
 
             {aiInsightsLastFetched && (
               <p
                 style={{
-                  fontSize: "0.75rem",
-                  color: "var(--text-secondary)",
+                  fontSize: '0.75rem',
+                  color: 'var(--text-secondary)',
                   margin: 0,
-                  padding: "4px 8px",
-                  background: "rgba(0,0,0,0.1)",
-                  borderRadius: "4px",
-                  display: "inline-flex",
-                  width: "fit-content",
+                  padding: '4px 8px',
+                  background: 'rgba(0,0,0,0.1)',
+                  borderRadius: '4px',
+                  display: 'inline-flex',
+                  width: 'fit-content',
                 }}
               >
                 Last updated: {aiInsightsLastFetched}
@@ -690,24 +688,24 @@ export default function Dashboard({
             {aiInsightsLoading ? (
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "24px 16px",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '24px 16px',
                 }}
               >
                 <div
                   style={{
-                    width: "40px",
-                    height: "40px",
-                    border: "4px solid rgba(139,92,246,0.2)",
-                    borderTop: "4px solid #8b5cf6",
-                    borderRadius: "50%",
-                    animation: "spin 1s linear infinite",
+                    width: '40px',
+                    height: '40px',
+                    border: '4px solid rgba(139,92,246,0.2)',
+                    borderTop: '4px solid #8b5cf6',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite',
                   }}
                 ></div>
-                <p style={{ color: "var(--text-secondary)", margin: 0 }}>
+                <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
                   Analyzing your expenses with NVIDIA AI...
                 </p>
               </div>
@@ -716,22 +714,22 @@ export default function Dashboard({
                 {aiInsights.summary && (
                   <div
                     style={{
-                      padding: "16px",
-                      background: "rgba(255,255,255,0.08)",
-                      borderRadius: "12px",
-                      border: "1px solid rgba(139,92,246,0.15)",
+                      padding: '16px',
+                      background: 'rgba(255,255,255,0.08)',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(139,92,246,0.15)',
                     }}
                   >
                     <p
                       style={{
-                        margin: "0 0 4px 0",
-                        color: "var(--text-secondary)",
-                        fontSize: "0.85rem",
+                        margin: '0 0 4px 0',
+                        color: 'var(--text-secondary)',
+                        fontSize: '0.85rem',
                       }}
                     >
                       📊 Executive Summary
                     </p>
-                    <p style={{ margin: 0, fontWeight: "500" }}>
+                    <p style={{ margin: 0, fontWeight: '500' }}>
                       {aiInsights.summary}
                     </p>
                   </div>
@@ -740,40 +738,40 @@ export default function Dashboard({
                 {aiInsights.insights && aiInsights.insights.length > 0 && (
                   <div
                     style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "10px",
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '10px',
                     }}
                   >
                     {aiInsights.insights.map((insight, idx) => (
                       <div
                         key={idx}
                         style={{
-                          padding: "12px 14px",
-                          backgroundColor: "rgba(255,255,255,0.05)",
-                          borderRadius: "8px",
-                          borderLeft: "4px solid #8b5cf6",
-                          display: "flex",
-                          alignItems: "flex-start",
-                          gap: "8px",
-                          boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                          padding: '12px 14px',
+                          backgroundColor: 'rgba(255,255,255,0.05)',
+                          borderRadius: '8px',
+                          borderLeft: '4px solid #8b5cf6',
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: '8px',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                         }}
                       >
                         <span
                           style={{
-                            fontSize: "1.1rem",
-                            marginTop: "2px",
+                            fontSize: '1.1rem',
+                            marginTop: '2px',
                           }}
                         >
                           {idx === 0
-                            ? "💡"
+                            ? '💡'
                             : idx === 1
-                              ? "📈"
+                              ? '📈'
                               : idx === 2
-                                ? "⚠️"
+                                ? '⚠️'
                                 : idx === 3
-                                  ? "💰"
-                                  : "✨"}
+                                  ? '💰'
+                                  : '✨'}
                         </span>
                         <span style={{ flex: 1 }}>{insight}</span>
                       </div>
@@ -782,18 +780,18 @@ export default function Dashboard({
                 )}
               </>
             ) : (
-              <div style={{ textAlign: "center", padding: "20px" }}>
+              <div style={{ textAlign: 'center', padding: '20px' }}>
                 <p
                   style={{
-                    color: "var(--text-secondary)",
-                    margin: "0 0 12px 0",
+                    color: 'var(--text-secondary)',
+                    margin: '0 0 12px 0',
                   }}
                 >
                   No insights generated yet.
                 </p>
                 <button
                   className="btn btn-primary"
-                  style={{ padding: "8px 20px", fontSize: "0.9rem" }}
+                  style={{ padding: '8px 20px', fontSize: '0.9rem' }}
                   onClick={() => fetchAiInsights(true)}
                 >
                   Generate Insights
@@ -810,7 +808,7 @@ export default function Dashboard({
         className="glass-panel spotlight-card"
         onMouseMove={(e) => handleSpotlight(e, historyRef.current)}
       >
-        <h2 style={{ marginBottom: "16px" }}>
+        <h2 style={{ marginBottom: '16px' }}>
           <History /> Transaction & Import History
         </h2>
 
@@ -818,7 +816,7 @@ export default function Dashboard({
           {/* Expenses Log */}
           <div>
             <h3>Shared Expenses</h3>
-            <div className="table-wrapper" style={{ maxHeight: "400px" }}>
+            <div className="table-wrapper" style={{ maxHeight: '400px' }}>
               <table>
                 <thead>
                   <tr>
@@ -832,13 +830,13 @@ export default function Dashboard({
                 <tbody>
                   {expenses.map((exp) => (
                     <tr key={exp.id}>
-                      <td style={{ fontSize: "0.85rem" }}>{exp.date}</td>
+                      <td style={{ fontSize: '0.85rem' }}>{exp.date}</td>
                       <td>
                         <strong>{exp.description}</strong>
                         <div
                           style={{
-                            fontSize: "0.75rem",
-                            color: "var(--text-secondary)",
+                            fontSize: '0.75rem',
+                            color: 'var(--text-secondary)',
                           }}
                         >
                           Split: {exp.split_type}
@@ -849,11 +847,11 @@ export default function Dashboard({
                         <strong>
                           ₹{parseFloat(exp.amount_in_inr).toFixed(2)}
                         </strong>
-                        {exp.currency !== "INR" && (
+                        {exp.currency !== 'INR' && (
                           <div
                             style={{
-                              fontSize: "0.75rem",
-                              color: "var(--text-secondary)",
+                              fontSize: '0.75rem',
+                              color: 'var(--text-secondary)',
                             }}
                           >
                             {exp.amount} {exp.currency}
@@ -863,7 +861,7 @@ export default function Dashboard({
                       <td>
                         <button
                           className="btn btn-secondary"
-                          style={{ padding: "6px", color: "var(--danger)" }}
+                          style={{ padding: '6px', color: 'var(--danger)' }}
                           onClick={() => handleDeleteExpense(exp.id)}
                         >
                           <Trash2 size={14} />
@@ -876,8 +874,8 @@ export default function Dashboard({
                       <td
                         colSpan="5"
                         style={{
-                          textAlign: "center",
-                          color: "var(--text-muted)",
+                          textAlign: 'center',
+                          color: 'var(--text-muted)',
                         }}
                       >
                         No expenses logged.
@@ -892,7 +890,7 @@ export default function Dashboard({
           {/* Settlements Log */}
           <div>
             <h3>Recorded Settlements</h3>
-            <div className="table-wrapper" style={{ maxHeight: "400px" }}>
+            <div className="table-wrapper" style={{ maxHeight: '400px' }}>
               <table>
                 <thead>
                   <tr>
@@ -905,15 +903,15 @@ export default function Dashboard({
                 <tbody>
                   {settlements.map((setl) => (
                     <tr key={setl.id}>
-                      <td style={{ fontSize: "0.85rem" }}>{setl.date}</td>
+                      <td style={{ fontSize: '0.85rem' }}>{setl.date}</td>
                       <td>
-                        <strong>{setl.payer_display_name}</strong> pays{" "}
+                        <strong>{setl.payer_display_name}</strong> pays{' '}
                         <strong>{setl.payee_display_name}</strong>
                         {setl.notes && (
                           <div
                             style={{
-                              fontSize: "0.75rem",
-                              color: "var(--text-secondary)",
+                              fontSize: '0.75rem',
+                              color: 'var(--text-secondary)',
                             }}
                           >
                             Note: {setl.notes}
@@ -921,14 +919,14 @@ export default function Dashboard({
                         )}
                       </td>
                       <td>
-                        <strong style={{ color: "var(--text-primary)" }}>
+                        <strong style={{ color: 'var(--text-primary)' }}>
                           ₹{parseFloat(setl.amount).toFixed(2)}
                         </strong>
                       </td>
                       <td>
                         <button
                           className="btn btn-secondary"
-                          style={{ padding: "6px", color: "var(--danger)" }}
+                          style={{ padding: '6px', color: 'var(--danger)' }}
                           onClick={() => handleDeleteSettlement(setl.id)}
                         >
                           <Trash2 size={14} />
@@ -941,8 +939,8 @@ export default function Dashboard({
                       <td
                         colSpan="4"
                         style={{
-                          textAlign: "center",
-                          color: "var(--text-muted)",
+                          textAlign: 'center',
+                          color: 'var(--text-muted)',
                         }}
                       >
                         No settlements logged.
@@ -959,10 +957,10 @@ export default function Dashboard({
       {/* Import History Section */}
       {imports.length > 0 && (
         <div className="glass-panel">
-          <h3 style={{ marginBottom: "16px" }}>
+          <h3 style={{ marginBottom: '16px' }}>
             <FileText size={20} className="icon" /> Import History
           </h3>
-          <div className="table-wrapper" style={{ maxHeight: "300px" }}>
+          <div className="table-wrapper" style={{ maxHeight: '300px' }}>
             <table>
               <thead>
                 <tr>
@@ -979,27 +977,27 @@ export default function Dashboard({
                 {imports.map((imp) => (
                   <tr
                     key={imp.id}
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: 'pointer' }}
                     onClick={() => onSelectImport?.(imp.id)}
                   >
-                    <td style={{ fontSize: "0.85rem" }}>
+                    <td style={{ fontSize: '0.85rem' }}>
                       {new Date(imp.started_at).toLocaleString()}
                     </td>
                     <td>{imp.file_name}</td>
                     <td>{imp.total_rows}</td>
-                    <td style={{ color: "var(--success)" }}>
+                    <td style={{ color: 'var(--success)' }}>
                       {imp.imported_rows}
                     </td>
-                    <td style={{ color: "var(--accent)" }}>
+                    <td style={{ color: 'var(--accent)' }}>
                       {imp.corrected_rows}
                     </td>
-                    <td style={{ color: "var(--danger)" }}>
+                    <td style={{ color: 'var(--danger)' }}>
                       {imp.rejected_rows}
                     </td>
                     <td>
                       <button
                         className="btn btn-secondary"
-                        style={{ padding: "4px 12px" }}
+                        style={{ padding: '4px 12px' }}
                       >
                         View Report
                       </button>
@@ -1020,12 +1018,12 @@ export default function Dashboard({
         >
           <div
             className="modal-content glass-panel"
-            style={{ maxWidth: "800px" }}
+            style={{ maxWidth: '800px' }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header">
               <h2>
-                <FileSpreadsheet style={{ color: "var(--accent)" }} /> Itemized
+                <FileSpreadsheet style={{ color: 'var(--accent)' }} /> Itemized
                 Ledger for {selectedLedgerMember}
               </h2>
               <button
@@ -1038,9 +1036,9 @@ export default function Dashboard({
 
             <p
               style={{
-                marginTop: "-12px",
-                marginBottom: "20px",
-                fontSize: "0.9rem",
+                marginTop: '-12px',
+                marginBottom: '20px',
+                fontSize: '0.9rem',
               }}
             >
               Rohan's Request: Verified line-by-line transactions contributing
@@ -1049,8 +1047,8 @@ export default function Dashboard({
                 style={{
                   color:
                     balances[selectedLedgerMember] >= 0
-                      ? "var(--success)"
-                      : "var(--danger)",
+                      ? 'var(--success)'
+                      : 'var(--danger)',
                 }}
               >
                 {balances[selectedLedgerMember] >= 0
@@ -1059,7 +1057,7 @@ export default function Dashboard({
               </strong>
             </p>
 
-            <div className="table-wrapper" style={{ maxHeight: "450px" }}>
+            <div className="table-wrapper" style={{ maxHeight: '450px' }}>
               <table>
                 <thead>
                   <tr>
@@ -1075,13 +1073,13 @@ export default function Dashboard({
                     const isCredit = item.amount >= 0;
                     return (
                       <tr key={iIdx}>
-                        <td style={{ fontSize: "0.85rem" }}>{item.date}</td>
+                        <td style={{ fontSize: '0.85rem' }}>{item.date}</td>
                         <td>
                           <strong>{item.description}</strong>
                           <div
                             style={{
-                              fontSize: "0.75rem",
-                              color: "var(--text-secondary)",
+                              fontSize: '0.75rem',
+                              color: 'var(--text-secondary)',
                             }}
                           >
                             Payer: {item.payer} (Total: ₹
@@ -1091,12 +1089,12 @@ export default function Dashboard({
                         <td>
                           <span
                             className={`badge ${
-                              item.type.includes("paid")
-                                ? "badge-success"
-                                : "badge-danger"
+                              item.type.includes('paid')
+                                ? 'badge-success'
+                                : 'badge-danger'
                             }`}
                           >
-                            {item.type.replace(/_/g, " ")}
+                            {item.type.replace(/_/g, ' ')}
                           </span>
                         </td>
                         <td>
@@ -1105,9 +1103,9 @@ export default function Dashboard({
                         <td
                           style={{
                             color: isCredit
-                              ? "var(--success)"
-                              : "var(--danger)",
-                            fontWeight: "bold",
+                              ? 'var(--success)'
+                              : 'var(--danger)',
+                            fontWeight: 'bold',
                           }}
                         >
                           {isCredit
@@ -1123,8 +1121,8 @@ export default function Dashboard({
                       <td
                         colSpan="5"
                         style={{
-                          textAlign: "center",
-                          color: "var(--text-muted)",
+                          textAlign: 'center',
+                          color: 'var(--text-muted)',
                         }}
                       >
                         No transactions recorded for this member.
@@ -1160,7 +1158,7 @@ export default function Dashboard({
 
             <form
               onSubmit={handleAddExpense}
-              style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+              style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
             >
               <div className="form-group">
                 <label>Description</label>
@@ -1180,9 +1178,9 @@ export default function Dashboard({
 
               <div
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "16px",
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '16px',
                 }}
               >
                 <div className="form-group">
@@ -1211,7 +1209,7 @@ export default function Dashboard({
                       setNewExpense((prev) => ({
                         ...prev,
                         currency: cur,
-                        exchange_rate: cur === "USD" ? "83" : "1",
+                        exchange_rate: cur === 'USD' ? '83' : '1',
                       }));
                     }}
                   >
@@ -1221,7 +1219,7 @@ export default function Dashboard({
                 </div>
               </div>
 
-              {newExpense.currency === "USD" && (
+              {newExpense.currency === 'USD' && (
                 <div className="form-group">
                   <label>Exchange Rate (to INR)</label>
                   <input
@@ -1242,9 +1240,9 @@ export default function Dashboard({
 
               <div
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "16px",
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '16px',
                 }}
               >
                 <div className="form-group">
@@ -1291,24 +1289,24 @@ export default function Dashboard({
                 <label>Split With</label>
                 <div
                   style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: "10px",
-                    background: "rgba(0, 0, 0, 0.2)",
-                    padding: "12px",
-                    borderRadius: "8px",
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gap: '10px',
+                    background: 'rgba(0, 0, 0, 0.2)',
+                    padding: '12px',
+                    borderRadius: '8px',
                   }}
                 >
                   {members.map((m) => (
                     <label
                       key={m.id}
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        cursor: "pointer",
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        cursor: 'pointer',
                         margin: 0,
-                        color: "#fff",
+                        color: '#fff',
                       }}
                     >
                       <input
@@ -1322,7 +1320,7 @@ export default function Dashboard({
                 </div>
               </div>
 
-              {newExpense.split_type !== "equal" && (
+              {newExpense.split_type !== 'equal' && (
                 <div className="form-group">
                   <label>Split Details (Semicolon separated values)</label>
                   <input
@@ -1336,11 +1334,11 @@ export default function Dashboard({
                       }))
                     }
                     placeholder={
-                      newExpense.split_type === "share"
-                        ? "e.g. Aisha 2; Rohan 1; Priya 1"
-                        : newExpense.split_type === "percentage"
-                          ? "e.g. Aisha 30; Rohan 40; Priya 30"
-                          : "e.g. Aisha 700; Rohan 400"
+                      newExpense.split_type === 'share'
+                        ? 'e.g. Aisha 2; Rohan 1; Priya 1'
+                        : newExpense.split_type === 'percentage'
+                          ? 'e.g. Aisha 30; Rohan 40; Priya 30'
+                          : 'e.g. Aisha 700; Rohan 400'
                     }
                     required
                   />
@@ -1349,9 +1347,9 @@ export default function Dashboard({
 
               <div
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "16px",
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '16px',
                 }}
               >
                 <div className="form-group">
@@ -1387,10 +1385,10 @@ export default function Dashboard({
 
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "12px",
-                  marginTop: "16px",
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '12px',
+                  marginTop: '16px',
                 }}
               >
                 <button
@@ -1431,7 +1429,7 @@ export default function Dashboard({
 
             <form
               onSubmit={handleAddSettlement}
-              style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+              style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
             >
               <div className="form-group">
                 <label>Paid By (Payer)</label>
@@ -1470,7 +1468,7 @@ export default function Dashboard({
                   {members
                     .filter(
                       (m) =>
-                        m.user.toString() !== newSettlement.payer.toString(),
+                        m.user.toString() !== newSettlement.payer.toString()
                     )
                     .map((m) => (
                       <option key={m.id} value={m.user}>
@@ -1531,10 +1529,10 @@ export default function Dashboard({
 
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "12px",
-                  marginTop: "16px",
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '12px',
+                  marginTop: '16px',
                 }}
               >
                 <button
@@ -1561,7 +1559,7 @@ export default function Dashboard({
         >
           <div
             className="modal-content glass-panel"
-            style={{ maxWidth: "750px" }}
+            style={{ maxWidth: '750px' }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header">
@@ -1576,15 +1574,15 @@ export default function Dashboard({
 
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "24px",
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '24px',
               }}
             >
               {/* Member list & dates */}
               <div>
                 <h3>Active Members List</h3>
-                <div className="table-wrapper" style={{ maxHeight: "350px" }}>
+                <div className="table-wrapper" style={{ maxHeight: '350px' }}>
                   <table>
                     <thead>
                       <tr>
@@ -1599,18 +1597,18 @@ export default function Dashboard({
                           <td>
                             <strong>{m.display_name}</strong>
                           </td>
-                          <td style={{ fontSize: "0.8rem" }}>
+                          <td style={{ fontSize: '0.8rem' }}>
                             {m.joined_date}
                           </td>
                           <td
                             style={{
-                              fontSize: "0.8rem",
+                              fontSize: '0.8rem',
                               color: m.left_date
-                                ? "var(--danger)"
-                                : "var(--text-secondary)",
+                                ? 'var(--danger)'
+                                : 'var(--text-secondary)',
                             }}
                           >
-                            {m.left_date || "Present"}
+                            {m.left_date || 'Present'}
                           </td>
                         </tr>
                       ))}
@@ -1622,18 +1620,18 @@ export default function Dashboard({
               {/* Add/Edit member form */}
               <div>
                 <h3>Configure Membership</h3>
-                <p style={{ fontSize: "0.8rem" }}>
-                  Add a new flatmate or modify membership duration dates
+                <p style={{ fontSize: '0.8rem' }}>
+                  Add a new group member or modify membership duration dates
                   (joined/left) for date boundary checks.
                 </p>
 
                 <form
                   onSubmit={handleSaveMember}
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "12px",
-                    marginTop: "12px",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                    marginTop: '12px',
                   }}
                 >
                   <div className="form-group">
@@ -1685,7 +1683,7 @@ export default function Dashboard({
                   <button
                     type="submit"
                     className="btn btn-primary"
-                    style={{ marginTop: "8px" }}
+                    style={{ marginTop: '8px' }}
                   >
                     Save Member Config
                   </button>
