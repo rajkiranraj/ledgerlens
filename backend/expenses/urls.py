@@ -4,6 +4,7 @@ from expenses.views import (
     LoginView, AuthStatusView, GroupViewSet, MembershipView,
     GroupExpensesView, GroupSettlementsView, GroupBalancesView,
     ImportParseView, ImportConfirmView, ImportListView, ImportReportView,
+    ImportReportExportView,
     GroupAnalyticsView, api_root_view,
     AIGenerateInsightsView, AIGenerateImportSummaryView
 )
@@ -27,6 +28,7 @@ urlpatterns = [
     path('api/groups/<int:group_id>/import/confirm/', ImportConfirmView.as_view(), name='import_confirm'),
     path('api/groups/<int:group_id>/imports/', ImportListView.as_view(), name='import_list'),
     path('api/groups/<int:group_id>/imports/<int:import_id>/report/', ImportReportView.as_view(), name='import_report'),
+    path('api/groups/<int:group_id>/imports/<int:import_id>/export/<str:format_type>/', ImportReportExportView.as_view(), name='import_report_export'),
     path('api/groups/<int:group_id>/ai/insights/', AIGenerateInsightsView.as_view(), name='ai_insights'),
     path('api/groups/<int:group_id>/ai/import-summary/<int:import_id>/', AIGenerateImportSummaryView.as_view(), name='ai_import_summary'),
 ]
