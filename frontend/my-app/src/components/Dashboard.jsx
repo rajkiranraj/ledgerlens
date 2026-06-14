@@ -425,14 +425,14 @@ export default function Dashboard({
       <div className="dashboard-grid">
         {/* Left column: Balances & Minimized Transactions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* Flatmate Net Balances */}
+          {/* Group Member Net Balances */}
           <div
             ref={balancesRef}
             className="glass-panel spotlight-card"
             onMouseMove={(e) => handleSpotlight(e, balancesRef.current)}
           >
             <h2>
-              <Users /> Flatmate Balances
+              <Users /> Group Member Balances
             </h2>
             <p
               style={{
