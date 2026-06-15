@@ -119,19 +119,19 @@ def generate_deterministic_import_summary(data: Dict[str, Any]) -> Dict[str, Any
     return {"summary": summary}
 
 
-def call_nvidia_nim_api(prompt: str) -> str:
-    """Call NVIDIA NIM API with timeout handling"""
+def call_spreetail_ai_api(prompt: str) -> str:
+    """Call Spreetail AI (NVIDIA NIM backend) with timeout handling"""
     if not settings.AI_ENABLED:
         raise Exception("AI is disabled")
 
     try:
         headers = {
-            "Authorization": f"Bearer {settings.NVIDIA_NIM_API_KEY}",
+            "Authorization": f"Bearer {settings.SPREETAIL_AI_API_KEY}",
             "Accept": "application/json"
         }
 
         payload = {
-            "model": settings.NVIDIA_NIM_MODEL,
+            "model": settings.SPREETAIL_AI_MODEL,
             "messages": [{"role": "user", "content": prompt}],
             "max_tokens": 512,
             "temperature": 0.20,
@@ -142,7 +142,7 @@ def call_nvidia_nim_api(prompt: str) -> str:
         }
 
         response = requests.post(
-            settings.NVIDIA_NIM_INVOKE_URL,
+            settings.SPREETAIL_AI_INVOKE_URL,
             headers=headers,
             json=payload,
             timeout=30
@@ -155,10 +155,10 @@ def call_nvidia_nim_api(prompt: str) -> str:
         if "choices" in response_data and len(response_data["choices"]) > 0:
             return response_data["choices"][0]["message"]["content"]
         else:
-            raise Exception("Invalid response format from NVIDIA NIM")
+            raise Exception("Invalid response format from Spreetail AI")
 
     except requests.exceptions.RequestException as e:
-        logger.error(f"NVIDIA NIM API call failed: {e}")
+        logger.error(f"Spreetail AI API call failed: {e}")
         raise
 
 
