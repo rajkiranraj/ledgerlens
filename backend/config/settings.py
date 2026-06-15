@@ -170,11 +170,11 @@ REST_FRAMEWORK = {
     ],
 }
 
-# AI Configuration (NVIDIA NIM)
-NVIDIA_NIM_API_KEY = os.getenv('NVIDIA_NIM_API_KEY', '')
-NVIDIA_NIM_INVOKE_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-NVIDIA_NIM_MODEL = os.getenv('NVIDIA_NIM_MODEL', 'google/gemma-3n-e4b-it')
-AI_ENABLED = bool(NVIDIA_NIM_API_KEY)
+# AI Configuration (Spreetail AI - using NVIDIA NIM backend
+SPREETAIL_AI_API_KEY = os.getenv('SPREETAIL_AI_API_KEY', os.getenv('NVIDIA_NIM_API_KEY', ''))
+SPREETAIL_AI_INVOKE_URL = os.getenv('SPREETAIL_AI_INVOKE_URL', "https://integrate.api.nvidia.com/v1/chat/completions")
+SPREETAIL_AI_MODEL = os.getenv('SPREETAIL_AI_MODEL', os.getenv('NVIDIA_NIM_MODEL', 'google/gemma-3n-e4b-it'))
+AI_ENABLED = bool(SPREETAIL_AI_API_KEY)
 
 # Caching for AI insights (in-memory for dev, use Redis in prod)
 # Cache key: {group_id}_insights or {group_id}_import_{import_id}_summary

@@ -27,7 +27,7 @@ from expenses.ai_utils import (
     build_import_summary_prompt,
     generate_deterministic_insights,
     generate_deterministic_import_summary,
-    call_nvidia_nim_api,
+    call_spreetail_ai_api,
     parse_ai_response,
     get_cached_result,
     set_cached_result,
@@ -440,7 +440,7 @@ class AIGenerateInsightsView(APIView):
         result = None
         try:
             prompt = build_insights_prompt(data)
-            ai_response = call_nvidia_nim_api(prompt)
+            ai_response = call_spreetail_ai_api(prompt)
             result = parse_ai_response(ai_response)
         except Exception as e:
             print(f"AI failed, using fallback: {e}")
