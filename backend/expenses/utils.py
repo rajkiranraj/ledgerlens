@@ -355,23 +355,29 @@ def calculate_balances(group_id):
     settlements = Settlement.objects.filter(group=group).order_by('date', 'id')
 
     for exp in expenses:
-        payer_username = exp.paid_by.username
+        try:
+            payer_username = exp.paid_by.username
+        except User.DoesNotExist:
+            continue
         splits = exp.splits.all()
         
         for sp in splits:
-            debtor_username = sp.user.username
-            if debtor_username in balances:
-                balances[debtor_username] -= sp.share_amount_in_inr
-                ledgers[debtor_username].append({
-                    'type': 'expense_owed',
-                    'date': str(exp.date),
-                    'description': exp.description,
-                    'payer': payer_username,
-                    'total_amount': float(exp.amount_in_inr),
-                    'currency': exp.currency,
-                    'split_value': sp.split_value,
-                    'amount': -float(sp.share_amount_in_inr)
-                })
+            try:
+                debtor_username = sp.user.username
+                if debtor_username in balances:
+                    balances[debtor_username] -= sp.share_amount_in_inr
+                    ledgers[debtor_username].append({
+                        'type': 'expense_owed',
+                        'date': str(exp.date),
+                        'description': exp.description,
+                        'payer': payer_username,
+                        'total_amount': float(exp.amount_in_inr),
+                        'currency': exp.currency,
+                        'split_value': sp.split_value,
+                        'amount': -float(sp.share_amount_in_inr)
+                    })
+            except User.DoesNotExist:
+                continue
 
         if payer_username in balances:
             balances[payer_username] += exp.amount_in_inr
@@ -387,8 +393,11 @@ def calculate_balances(group_id):
             })
 
     for setl in settlements:
-        payer = setl.payer.username
-        payee = setl.payee.username
+        try:
+            payer = setl.payer.username
+            payee = setl.payee.username
+        except User.DoesNotExist:
+            continue
         
         if payer in balances:
             balances[payer] += setl.amount

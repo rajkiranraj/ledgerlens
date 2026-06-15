@@ -486,7 +486,7 @@ export default function Dashboard({
             onMouseMove={(e) => handleSpotlight(e, settlementsRef.current)}
           >
             <h2>
-              <Wallet /> Settlement Schedule (Aisha's View)
+              <Wallet /> Settlement Schedule
             </h2>
             <p
               style={{
@@ -495,8 +495,7 @@ export default function Dashboard({
                 fontSize: '0.85rem',
               }}
             >
-              Aisha's request: Minimizes overall transaction count. Settles all
-              group debts.
+              Minimizes overall transaction count. Settles all group debts.
             </p>
 
             {minimized_debts.length === 0 ? (
@@ -1010,7 +1009,7 @@ export default function Dashboard({
         </div>
       )}
 
-      {/* MODAL 1: Rohan's Detailed Itemized breakdown */}
+      {/* MODAL 1: Detailed Itemized Ledger */}
       {selectedLedgerMember && (
         <div
           className="modal-overlay"
@@ -1041,8 +1040,7 @@ export default function Dashboard({
                 fontSize: '0.9rem',
               }}
             >
-              Rohan's Request: Verified line-by-line transactions contributing
-              to a balance of
+              Verified line-by-line transactions contributing to a balance of
               <strong
                 style={{
                   color:
@@ -1335,10 +1333,10 @@ export default function Dashboard({
                     }
                     placeholder={
                       newExpense.split_type === 'share'
-                        ? 'e.g. Aisha 2; Rohan 1; Priya 1'
+                        ? 'e.g. Demo 2; Admin 1; User 1'
                         : newExpense.split_type === 'percentage'
-                          ? 'e.g. Aisha 30; Rohan 40; Priya 30'
-                          : 'e.g. Aisha 700; Rohan 400'
+                          ? 'e.g. Demo 30; Admin 40; User 30'
+                          : 'e.g. Demo 700; Admin 400'
                     }
                     required
                   />
@@ -1517,7 +1515,7 @@ export default function Dashboard({
                   type="text"
                   className="form-control"
                   value={newSettlement.notes}
-                  placeholder="e.g. Paid Rohan via UPI"
+                  placeholder="e.g. Paid Demo via UPI"
                   onChange={(e) =>
                     setNewSettlement((prev) => ({
                       ...prev,
