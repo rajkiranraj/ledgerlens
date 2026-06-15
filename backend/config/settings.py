@@ -170,7 +170,7 @@ REST_FRAMEWORK = {
     ],
 }
 
-# AI Configuration (NVIDIA NIM)
+# AI Configuration (Spreetail AI branding, using NVIDIA NIM backend)
 NVIDIA_NIM_API_KEY = os.getenv('NVIDIA_NIM_API_KEY', '')
 NVIDIA_NIM_INVOKE_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
 NVIDIA_NIM_MODEL = os.getenv('NVIDIA_NIM_MODEL', 'google/gemma-3n-e4b-it')
