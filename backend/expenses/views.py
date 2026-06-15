@@ -27,7 +27,7 @@ from expenses.ai_utils import (
     build_import_summary_prompt,
     generate_deterministic_insights,
     generate_deterministic_import_summary,
-    call_spreetail_ai_api,
+    call_nvidia_nim_api,
     parse_ai_response,
     get_cached_result,
     set_cached_result,
@@ -440,7 +440,7 @@ class AIGenerateInsightsView(APIView):
         result = None
         try:
             prompt = build_insights_prompt(data)
-            ai_response = call_spreetail_ai_api(prompt)
+            ai_response = call_nvidia_nim_api(prompt)
             result = parse_ai_response(ai_response)
         except Exception as e:
             print(f"AI failed, using fallback: {e}")
@@ -504,14 +504,19 @@ class ImportParseView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, group_id):
-        csv_file = request.FILES.get('file')
-        if not csv_file:
-            return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
+            group = Group.objects.get(id=group_id)
+            if not GroupMembership.objects.filter(group=group, user=request.user).exists():
+                return Response({'error': 'Not a member of this group'}, status=status.HTTP_403_FORBIDDEN)
+            csv_file = request.FILES.get('file')
+            if not csv_file:
+                return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
+
             file_content = csv_file.read().decode('utf-8')
             parsed_rows = parse_csv_export(file_content, group_id)
             return Response({'rows': parsed_rows})
+        except Group.DoesNotExist:
+            return Response({'error': 'Group not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': f"Failed to parse CSV: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -519,12 +524,14 @@ class ImportConfirmView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, group_id):
-        rows = request.data.get('rows', [])
-        if not rows:
-            return Response({'error': 'No data to import'}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
             group = Group.objects.get(id=group_id)
+            if not GroupMembership.objects.filter(group=group, user=request.user).exists():
+                return Response({'error': 'Not a member of this group'}, status=status.HTTP_403_FORBIDDEN)
+            rows = request.data.get('rows', [])
+            if not rows:
+                return Response({'error': 'No data to import'}, status=status.HTTP_400_BAD_REQUEST)
+
             import_logs = []
             expenses_imported = 0
             settlements_imported = 0
@@ -683,15 +690,27 @@ class ImportListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, group_id):
-        imports = Import.objects.filter(group_id=group_id).order_by('-started_at')
-        return Response(ImportSerializer(imports, many=True).data)
+        try:
+            group = Group.objects.get(id=group_id)
+            if not GroupMembership.objects.filter(group=group, user=request.user).exists():
+                return Response({'error': 'Not a member of this group'}, status=status.HTTP_403_FORBIDDEN)
+            imports = Import.objects.filter(group_id=group_id).order_by('-started_at')
+            return Response(ImportSerializer(imports, many=True).data)
+        except Group.DoesNotExist:
+            return Response({'error': 'Group not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class ImportReportView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, group_id, import_id):
         try:
-            report = ImportReport.objects.get(group_id=group_id, import_record_id=import_id)
+            group = Group.objects.get(id=group_id)
+            if not GroupMembership.objects.filter(group=group, user=request.user).exists():
+                return Response({'error': 'Not a member of this group'}, status=status.HTTP_403_FORBIDDEN)
+            try:
+                report = ImportReport.objects.get(group_id=group_id, import_record_id=import_id)
+            except ImportReport.DoesNotExist:
+                return Response({'error': 'Report not found'}, status=status.HTTP_404_NOT_FOUND)
             import_record = report.import_record
 
             # Calculate anomaly summary
@@ -720,15 +739,21 @@ class ImportReportView(APIView):
             report_data['processing_duration_seconds'] = processing_duration_seconds
 
             return Response(report_data)
-        except ImportReport.DoesNotExist:
-            return Response({'error': 'Report not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Group.DoesNotExist:
+            return Response({'error': 'Group not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class ImportReportExportView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, group_id, import_id, format_type):
         try:
-            report = ImportReport.objects.get(group_id=group_id, import_record_id=import_id)
+            group = Group.objects.get(id=group_id)
+            if not GroupMembership.objects.filter(group=group, user=request.user).exists():
+                return Response({'error': 'Not a member of this group'}, status=status.HTTP_403_FORBIDDEN)
+            try:
+                report = ImportReport.objects.get(group_id=group_id, import_record_id=import_id)
+            except ImportReport.DoesNotExist:
+                return Response({'error': 'Report not found'}, status=status.HTTP_404_NOT_FOUND)
             import_record = report.import_record
             anomalies = Anomaly.objects.filter(import_record=import_record)
 
@@ -776,9 +801,8 @@ class ImportReportExportView(APIView):
                 return response
             else:
                 return Response({'error': 'Invalid format'}, status=status.HTTP_400_BAD_REQUEST)
-
-        except ImportReport.DoesNotExist:
-            return Response({'error': 'Report not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Group.DoesNotExist:
+            return Response({'error': 'Group not found'}, status=status.HTTP_404_NOT_FOUND)
 
 from django.http import JsonResponse
 
