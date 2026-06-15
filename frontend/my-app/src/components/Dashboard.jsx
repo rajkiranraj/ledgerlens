@@ -91,47 +91,69 @@ export default function Dashboard({
     try {
       const headers = { Authorization: `Token ${token}` };
 
+      console.log('[Dashboard] Starting fetch, API_BASE_URL:', API_BASE_URL);
+
       // Get Balances, Ledgers, Minimized
+      console.log('[Dashboard] Fetching balances...');
       const balRes = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/balances/`,
         { headers }
       );
+      if (!balRes.ok) throw new Error(`Balances failed: ${balRes.status}`);
       const balData = await balRes.json();
+      console.log('[Dashboard] Balances:', balData);
 
       // Get Expenses
+      console.log('[Dashboard] Fetching expenses...');
       const expRes = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/expenses/`,
         { headers }
       );
+      if (!expRes.ok) throw new Error(`Expenses failed: ${expRes.status}`);
       const expData = await expRes.json();
+      console.log('[Dashboard] Expenses:', expData);
 
       // Get Settlements
+      console.log('[Dashboard] Fetching settlements...');
       const setlRes = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/settlements/`,
         { headers }
       );
+      if (!setlRes.ok) throw new Error(`Settlements failed: ${setlRes.status}`);
       const setlData = await setlRes.json();
+      console.log('[Dashboard] Settlements:', setlData);
 
       // Get Members
+      console.log('[Dashboard] Fetching members...');
       const memRes = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/members/`,
         { headers }
       );
+      if (!memRes.ok) throw new Error(`Members failed: ${memRes.status}`);
       const memData = await memRes.json();
+      console.log('[Dashboard] Members:', memData);
 
       // Get Analytics
+      console.log('[Dashboard] Fetching analytics...');
       const analyticsRes = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/analytics/`,
         { headers }
       );
+      if (!analyticsRes.ok)
+        throw new Error(`Analytics failed: ${analyticsRes.status}`);
       const analyticsData = await analyticsRes.json();
+      console.log('[Dashboard] Analytics:', analyticsData);
 
       // Get Imports
+      console.log('[Dashboard] Fetching imports...');
       const importsRes = await fetch(
         `${API_BASE_URL}/api/groups/${groupId}/imports/`,
         { headers }
       );
+      if (!importsRes.ok)
+        throw new Error(`Imports failed: ${importsRes.status}`);
       const importsData = await importsRes.json();
+      console.log('[Dashboard] Imports:', importsData);
 
       setData(balData);
       setExpenses(expData);
@@ -145,8 +167,10 @@ export default function Dashboard({
         ...prev,
         split_with: memData.map((m) => m.username),
       }));
-    } catch {
-      setError('Failed to sync dashboard data with server');
+      console.log('[Dashboard] Fetch complete');
+    } catch (err) {
+      console.error('[Dashboard] Sync error:', err);
+      setError(`Failed to sync: ${err.message}`);
     }
   };
 
